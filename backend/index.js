@@ -21,6 +21,11 @@ app.use(express.json())
 app.use('/api/auth', authRoute)
 app.use('/api/notes', notesRoute)
 
+
+app.get('/',(req, res)=>{
+res.send('Welcome to EnoteBook Project Api')
+})
+
 // port listening
 app.listen(PORT, () => {
     console.log(`http://localhost:${PORT}`);
