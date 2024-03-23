@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body{
+    background-image: linear-gradient(to top, rgb(246, 224, 190), rgb(158, 158, 158));
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+.inputShadow{
+    box-shadow: inset 4px 1px 8px 4px rgba(0, 0, 0, 0.10);
+}
