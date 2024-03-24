@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Layout from '../../components/layout/Layout'
 import myContext from '../../context/data/myContext'
+import axios from 'axios'
 
 function Profile() {
     const context = useContext(myContext)
@@ -11,18 +12,16 @@ function Profile() {
     // profile data function
     const userData = async () => {
         try {
-            const res = await fetch(`${import.meta.env.VITE_BACKEND_HOST_URL}/api/auth/getuser`, {
-                method: "GET",
+            const res = await axios.get(`${import.meta.env.VITE_BACKEND_API_URL}/api/auth/getuser`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'auth-token': localStorage.getItem('token')
                 }
             })
 
-            const resData = await res.json()
-
+            console.log(res);
             // destrucute user data from resData
-            const { user } = resData;
+            const { user } = res.data;
 
             // set Data
             setUser(user)
@@ -35,7 +34,7 @@ function Profile() {
     useEffect(() => {
         userData()
     }, [])
-    
+
     return (
         <Layout>
             <div className="  mt-32 lg:mt-20 lg:mx-[30em]">

@@ -1,49 +1,35 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
+import axios from 'axios'
 
 function Login() {
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
+    console.log(userData);
+
     // navigate
     const navigate = useNavigate()
 
     // User Login
     const loginHandler = async () => {
-        const res = await fetch(`/api/auth/login`, {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password })
-        })
+        const res = await axios.post(`${import.meta.env.VITE_BACKEND_API_URL}/api/auth/login`, { email, password })
 
-        const resData = await res.json();
-
-        // destructure msg from resData
-        const { msg, err, token } = resData
+        console.log(res.data);
+        // destructure msg from res.data
+        const { msg, err, token, success } = res.data
 
         // condition
-        if (msg == 'User Login successfully !!') {
+        if (success) {
             toast.success(msg)
             localStorage.setItem('token', token)
             navigate('/')
-        } else if (msg == "Your password not match !!") {
+        } else {
             toast.error(msg)
-        } else if (msg == "User not found !!") {
-            toast.error(msg)
-
-        } else if (msg == "Please enter the valid email !!") {
-            toast.error(msg)
-        } else if (msg == "All feilds is required !!") {
-            toast.error(msg)
-        } else if (err) {
-            toast.error(msg)
-            console.log(err)
+            console.log(err);
         }
-
         setEmail('')
         setPassword('')
     }

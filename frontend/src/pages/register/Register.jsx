@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
+import axios from 'axios';
 
 function Register() {
 
@@ -12,36 +13,24 @@ function Register() {
 
     // User Registration
     const registerHandler = async () => {
-        const res = await fetch(`/api/auth/register`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ name, email, password })
-        })
-        const resData = await res.json()
 
-        // destructure msg from resData
-        const { msg, err, token } = resData
-        
+        const res = await axios.post(`${import.meta.env.VITE_BACKEND_API_URL}/api/auth/register`, { name, email, password })
+
+        // destructure msg from res.data
+        const { msg, token, success, err } = res.data
+
         // condition
-        if (msg == 'User registration successfully !!') {
+        if (success) {
             toast.success(msg)
             localStorage.setItem('token', token)
             navigate('/')
-        } else if (msg == "User already exist !!") {
+        } else {
             toast.error(msg)
-        } else if (msg == "Please enter the valid email !!") {
-            toast.error(msg)
-        } else if (msg == "All feilds is required !!") {
-            toast.error(msg)
-        } else if (err) {
-            toast.error(msg)
-            console.log(err)
+            console.log(err);
         }
-        setName("");
-        setEmail("");
-        setPassword("");
+        setName('');
+        setEmail('');
+        setPassword('');
     }
 
     return (

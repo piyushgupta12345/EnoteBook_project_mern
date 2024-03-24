@@ -1,33 +1,34 @@
 import React, { useState } from 'react'
 import MyContext from './myContext';
 import { toast } from 'react-hot-toast';
+import axios from 'axios';
 
 function MyState(props) {
 
+  const[userData, setUserData] = useState({})
+
   // get all notes
-  // const [loading, setLoading] = useState(false);
   const [allNotes, setAllNotes] = useState([])
 
   // get all notes function
   const getAllNotes = async () => {
     try {
-      // setLoading(true)
-      const res = await fetch(`/api/notes/fetchallnotes`, {
-        method: 'GET',
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_API_URL}/api/notes/fetchallnotes`, {
         headers: {
           'Content-Type': 'application/json',
           'auth-token': localStorage.getItem('token')
         }
       })
 
-      const resData = await res.json();
-      const { notes } = resData
+      console.log(res);
+      
+      // destructure msg from res.data
+      const { notes } = res.data
       setAllNotes(notes)
-      // setLoading(false)
+
     } catch (error) {
       console.log(error);
       console.log("Not get all notes")
-      // setLoading(false)
     }
   }
 
@@ -39,27 +40,25 @@ function MyState(props) {
   // add note function
   const addNote = async () => {
     try {
-      const res = await fetch(`/api/notes/addnote`, {
-        method: "POST",
+      const res = await axios.post(`${import.meta.env.VITE_BACKEND_API_URL}/api/notes/addnote`, { title, description, tag }, {
         headers: {
           'Content-Type': 'application/json',
           'auth-token': localStorage.getItem('token')
-        },
-        body: JSON.stringify({ title, description, tag })
+        }
       })
 
-      const resData = await res.json()
-      console.log(resData);
+      console.log(res);
 
+      // call get all notes
       getAllNotes();
-      const { msg, err } = resData
+
+      // destruture res.data
+      const { msg, err, success } = res.data
 
       // condition
-      if (msg == "All feilds are required !!") {
+      if (success) {
         toast.success(msg)
-      } else if (msg == "Note add successfully !!") {
-        toast.success(msg)
-      } else if (msg == "Add note process failed !!") {
+      } else {
         toast.error(msg)
         console.log(err);
       }
@@ -77,28 +76,24 @@ function MyState(props) {
   // delete note function
   const deleteNote = async (_id) => {
     try {
-      const res = await fetch(`/api/notes/deletenote/${_id}`, {
-        method: "DELETE",
+      const res = await axios.delete(`${import.meta.env.VITE_BACKEND_API_URL}/api/notes/deletenote/${_id}`, {
         headers: {
           'Content-Type': 'application/json',
           'auth-token': localStorage.getItem('token')
         }
       })
 
-      const resData = await res.json();
-
+      console.log(res);
       // call get all notes
       getAllNotes();
-      const { msg, err } = resData
+      const { msg, err, success } = res.data
 
       // condition
-      if (msg == "delete note process falied !!") {
+      if (success) {
+        toast.success(msg)
+      } else {
         toast.error(msg)
         console.log(err);
-      } else if (msg == "Note not found !!") {
-        toast.error(msg)
-      } else if (msg == "Note delete successfully !!") {
-        toast.success(msg)
       }
 
     } catch (error) {
@@ -109,7 +104,7 @@ function MyState(props) {
 
 
   return (
-    <MyContext.Provider value={{ getAllNotes, allNotes, title, setTitle, description, setDescription, tag, setTag, addNote, deleteNote }} >
+    <MyContext.Provider value={{userData, setUserData, getAllNotes, allNotes, title, setTitle, description, setDescription, tag, setTag, addNote, deleteNote }} >
       {props.children}
     </MyContext.Provider>
   )

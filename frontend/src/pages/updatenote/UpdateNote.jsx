@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Layout from '../../components/layout/Layout'
 import { useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import axios from 'axios'
 
 function UpdateNote() {
 
@@ -17,17 +18,15 @@ function UpdateNote() {
     const navigate = useNavigate()
 
     const getNotesById = async() => {
-        const res = await fetch(`/api/notes/fetchnote/${id}`, {
-            method: "GET",
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_API_URL}/api/notes/fetchnote/${id}`, {
             headers: {
                 'Content-Type': 'application/json',
                 'auth-token': localStorage.getItem('token')
             }
         })
 
-        const resData = await res.json()
-        console.log(resData.notes)
-        const { notes } = resData
+        console.log(res)
+        const { notes } = res.data
 
         setTitle(notes.title)
         setDescription(notes.description)
@@ -41,27 +40,22 @@ function UpdateNote() {
     // update note function
     const updateNote = async () => {
         try {
-            const res = await fetch(`/api/notes/updatenote/${id}`, {
-                method: "PUT",
+            const res = await axios.put(`${import.meta.env.VITE_BACKEND_API_URL}/api/notes/updatenote/${id}`, { title, description, tag }, {
                 headers: {
                     'Content-Type': 'application/json',
                     'auth-token': localStorage.getItem('token')
-                },
-                body: JSON.stringify({ title, description, tag })
+                }
             })
 
-            const resData = await res.json()
-            console.log(resData);
+            console.log(res);
 
-            const { msg, err } = resData
+            const { msg, err, success } = res.data
 
             // condition
-            if (msg == "Note update successfully !!") {
+            if (success) {
                 toast.success(msg)
                 navigate('/')
-            } else if (msg == "Note not found !!") {
-                toast.error(msg)
-            } else if (msg == "update note process failed !!") {
+            } else {
                 toast.error(msg)
                 console.log(err);
             }

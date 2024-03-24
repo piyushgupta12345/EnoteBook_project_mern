@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
+import axios from 'axios'
 
 function ForgetPassword() {
 
@@ -12,21 +13,18 @@ function ForgetPassword() {
 
     // User Forget Password
     const forgetPasswordHandler = async () => {
-        const res = await fetch(`/api/auth/forgetpassword`, {
-            method: "POST",
+        const res = await axios.post(`${import.meta.env.VITE_BACKEND_API_URL}/api/auth/forgetpassword`, { email, password }, {
             headers: {
                 'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password })
+            }
         })
 
-        const resData = await res.json();
-
+        console.log(res);
         // destructure msg from resData
-        const { msg, err, success } = resData
+        const { msg, err, success } = res.data
 
         // condition
-        if (success == true) {
+        if (success) {
             toast.success(msg)
             navigate('/login')
         } else {
