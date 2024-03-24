@@ -1,5 +1,5 @@
 import Navbar from '../navbar/Navbar'
-import SideBar from '../sidebar/SideBar'
+import SideBar from '../sidebar/Sidebar'
 
 function Layout({ children }) {
     return (
